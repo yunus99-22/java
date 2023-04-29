@@ -1,0 +1,41 @@
+
+CREATE or ALTER PROCEDURE spInsertEvent(
+	@LeaderID  INT,
+	@VenueID INT,
+    @EventDate DATE,
+    @TicketPrice INT)
+
+AS
+BEGIN
+
+--check if there is other Event by the same leader in the same date
+IF EXISTS (
+	SELECT 1 FROM Event
+	WHERE LeaderID = @LeaderID AND EventDate = @EventDate)
+BEGIN
+	PRINT 'The leader is alread busy'
+	RETURN
+END
+
+--check if there is other event in the same date at the same venue
+IF EXISTS (
+	SELECT 1 FROM Event
+	WHERE VenueID = @VenueID AND EventDate = @EventDate)
+BEGIN
+	PRINT 'The venue is alread busy'
+	RETURN
+END
+
+--Insert the events
+INSERT INTO Event (LeaderID,VenueID,EventDate,TicketPrice)
+VALUES (@LeaderID,
+@VenueID,
+@EventDate,
+@TicketPrice)
+	PRINT 'The Event is successfully addedd.'
+
+END
+
+INSERT INTO Event (LeaderID,VenueID,EventDate,TicketPrice)values(7,2,'2005-09-11',20)
+
+exec spInsertEvent @LeaderID=7,@VenueID=2,@EventDate='2005-09-11',@TicketPrice=20;
